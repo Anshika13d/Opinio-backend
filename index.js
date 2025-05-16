@@ -21,22 +21,19 @@ const server = http.createServer(app);
 // Define allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
-  process.env.CLIENT_URL,
+  'https://opinio-pink.vercel.app'
 ].filter(Boolean);
 
-// Set up Socket.io
+// Set up Socket.io with explicit CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS (Socket.io)'), false);
-    },
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling']
 });
-
 
 // Store io instance in app locals so it can be accessed in routes
 app.set('io', io);
@@ -45,17 +42,14 @@ app.set('io', io);
 app.use(cookieParser());
 app.use(express.json());
 
-// CORS configuration
+// CORS configuration for Express
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
