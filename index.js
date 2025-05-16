@@ -18,19 +18,19 @@ const port = process.env.PORT || 4001;
 // Create HTTP server
 const server = http.createServer(app);
 
+const allowedDomains = [
+  'localhost',
+  'https://opinio-ten.vercel.app',
+  'https://anshika13ds-projects.vercel.app',
+  'http://localhost:5173'
+];
+
 // Function to check if origin is allowed
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   
-  const allowedDomains = [
-    'localhost',
-    'opinio-pink.vercel.app',
-    'anshika13ds-projects.vercel.app'
-  ];
-  
-  return allowedDomains.some(domain => 
-    origin.includes(domain) || 
-    origin === 'http://localhost:5173'
+  return allowedDomains.some(domain =>
+    origin === domain || origin.includes(domain)
   );
 };
 
