@@ -8,7 +8,7 @@ initScheduler();
 // After creating your HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Your frontend URL
+    origin: "https://opinio-pink.vercel.app/", // Your frontend URL
     credentials: true
   }
 });
