@@ -20,18 +20,23 @@ const server = http.createServer(app);
 
 // Define allowed origins
 const allowedOrigins = [
-  'http://localhost:5173',  // Local development
-  process.env.CLIENT_URL,   // Vercel deployment
-];
+  'http://localhost:5173',
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 // Set up Socket.io
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PATCH'],
-    credentials: true,
-  },
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS (Socket.io)'), false);
+    },
+    credentials: true
+  }
 });
+
 
 // Store io instance in app locals so it can be accessed in routes
 app.set('io', io);
