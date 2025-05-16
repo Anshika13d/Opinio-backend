@@ -6,12 +6,7 @@ import mongoose from 'mongoose';
 initScheduler();
 
 // After creating your HTTP server
-const io = new Server(server, {
-  cors: {
-    origin: "https://opinio-pink.vercel.app/", // Your frontend URL
-    credentials: true
-  }
-});
+
 
 // Make io globally available
 global.io = io;

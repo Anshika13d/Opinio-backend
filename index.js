@@ -66,6 +66,9 @@ app.use(cors({
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 app.use('/contact', contactRoutes);
+app.get('/test', (req, res) => {
+  res.send('CORS is working!');
+});
 
 // Socket.io connection
 io.on('connection', (socket) => {
