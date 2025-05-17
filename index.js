@@ -22,16 +22,24 @@ const allowedDomains = [
   'localhost',
   'https://opinio-ten.vercel.app',
   'https://anshika13ds-projects.vercel.app',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'https://opinio-ten.vercel.app/',
+  'https://anshika13ds-projects.vercel.app/',
+  'capacitor://*',
+  'ionic://*'
 ];
 
 // Function to check if origin is allowed
 const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
+  if (!origin) return true; // Allow requests with no origin (like mobile apps)
   
-  return allowedDomains.some(domain =>
-    origin === domain || origin.includes(domain)
-  );
+  return allowedDomains.some(domain => {
+    if (domain.includes('*')) {
+      const pattern = new RegExp('^' + domain.replace('*', '.*') + '$');
+      return pattern.test(origin);
+    }
+    return origin === domain || origin.endsWith(domain);
+  });
 };
 
 // Set up Socket.io with explicit CORS configuration
@@ -71,7 +79,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
 // Add CORS headers for all responses
@@ -82,7 +90,8 @@ app.use((req, res, next) => {
   }
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   next();
 });
 
