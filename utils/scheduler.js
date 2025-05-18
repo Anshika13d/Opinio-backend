@@ -2,8 +2,8 @@ import cron from 'node-cron';
 import Event from '../model/events.js';
 
 export const initScheduler = () => {
-  // Run cleanup every hour
-  cron.schedule('0 * * * *', async () => {
+  // Run cleanup every minute
+  cron.schedule('* * * * *', async () => {
     try {
       console.log('Running event cleanup...');
       await Event.processEndedEvents();
